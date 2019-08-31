@@ -17,7 +17,8 @@ module.exports = {
   output: {
     filename: 'main.js',
     chunkFilename: 'chunk-[name].bundle.js',
-    path: path.resolve(__dirname, '../dist')
+    path: path.resolve(__dirname, '../dist'),
+    publicPath: '/'
   },
   module: {
     rules: [
