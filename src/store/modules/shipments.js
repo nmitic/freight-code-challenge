@@ -1,5 +1,7 @@
-import { APIConstants } from '../../APIConstants';
+import { push } from 'connected-react-router';
 import axios from 'axios';
+import qs from 'qs';
+import { APIConstants } from '../../APIConstants';
 // Constants
 const LOAD_START = 'freight/shipments/LOAD_START';
 const LOAD_SUCCESS = 'freight/shipments/LOAD_SUCCESS';
@@ -78,7 +80,9 @@ const initialState = {
     ITEMS: [],
     [REQUEST_TYPES.LOAD]: {
         isFetching: false,
-        isError: false
+        isError: false,
+        totalPageCount: 0,
+        currentPage: 1
     },
     [REQUEST_TYPES.UPDATE]: {
         isFetching: false,
@@ -124,9 +128,14 @@ const updateSuccess = (payload, id) => ({
     meta: { id }
 })
 
-export const fetchShipments = () => dispatch => {
+export const fetchShipments = params => dispatch => {
+    const stringifiedParams = qs.stringify(params);
+
     dispatch(loadStart());
-    axios.get(APIConstants.shipments)
+    dispatch(push({
+        search: stringifiedParams
+    }))
+    axios.get(APIConstants.shipments(stringifiedParams))
         .then(({data}) => dispatch(loadSuccess(data)))
         .catch(error => dispatch(loadFail()))
 }
