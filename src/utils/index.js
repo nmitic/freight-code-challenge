@@ -1,0 +1,1 @@
+export { removeEmptyProps } from './removeEmptyProps/removeEmptyProps';

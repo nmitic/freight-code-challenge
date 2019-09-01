@@ -1,6 +1,5 @@
 import { 
   Route, 
-  Link,
   Switch
 } from "react-router-dom";
 import { ConnectedRouter } from 'connected-react-router';
@@ -9,25 +8,32 @@ import { history } from './store/config';
 import React from 'react';
 import loadable from '@loadable/component';
 
-// import ShipmentsDetail from './pages/ShipmentsDetail';
-import './styles.scss';
+import ErrorBoundary from './components/ErrorBoundary';
 
-const Loading = () => <div>'Loading...'</div>;
-
-const SomeAsyncCpm = loadable(() => import('./someCpm'), {
-  fallback: <Loading />
-})
+import paths from './paths';
+import Loading from './components/Loading';
 
 const ShipmentsDetail = loadable(() => import('./pages/ShipmentsDetail'), {
   fallback: <Loading />
 })
 
+const Shipments = loadable(() => import('./pages/Shipments'), {
+  fallback: <Loading />
+})
+
 const App = () => (
   <ConnectedRouter history={history}>
-    <Link to="/shipments-detail/S1000">shipments-detail</Link>
     <Switch>
-      <Route path="/" exact component={SomeAsyncCpm} />
-      <Route path="/shipments-detail/:id" component={ShipmentsDetail} />
+        <Route path={paths.root} exact component={() => (
+          <ErrorBoundary>
+            <Shipments />
+          </ErrorBoundary>
+        )} />
+        <Route path={`${paths.shipmentsDetail}/:id`} exact component={() => (
+          <ErrorBoundary>
+            <ShipmentsDetail />
+          </ErrorBoundary>
+        )} />
     </Switch>
   </ConnectedRouter>);
 

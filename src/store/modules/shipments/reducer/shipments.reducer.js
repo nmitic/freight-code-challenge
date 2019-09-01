@@ -1,23 +1,15 @@
-import { push } from 'connected-react-router';
-import axios from 'axios';
-import qs from 'qs';
-import { APIConstants } from '../../APIConstants';
-// Constants
-const LOAD_START = 'freight/shipments/LOAD_START';
-const LOAD_SUCCESS = 'freight/shipments/LOAD_SUCCESS';
-const LOAD_FAIL = 'freight/shipments/LOAD_FAIL';
-
-const UPDATE_START = 'freight/shipments/UPDATE_START';
-const UPDATE_SUCCESS = 'freight/shipments/UPDATE_SUCCESS';
-const UPDATE_FAIL = 'freight/shipments/UPDATE_FAIL';
-
-const SORT = 'freight/shipments/SORT';
-const SEARCH = 'freight/shipments/SEARCH';
-
-const REQUEST_TYPES = {
-    LOAD: 'LOAD',
-    UPDATE: 'UPDATE',
-}
+import {
+    LOAD_START,
+    LOAD_SUCCESS,
+    LOAD_FAIL,
+    UPDATE_START,
+    UPDATE_SUCCESS,
+    UPDATE_FAIL,
+    LOAD_SHIPMENT_START,
+    LOAD_SHIPMENT_SUCCESS,
+    LOAD_SHIPMENT_FAIL,
+    REQUEST_TYPES
+} from '../types/shipments.types'
 
 // Case reducers
 const startRequest = ( state, requestType ) => (
@@ -51,6 +43,17 @@ const loadSuccessRequest = ( state, action ) => (
     }
 );
 
+const loadShipmentSuccessRequest = (state, action) => (
+    {
+        ...state,
+        [REQUEST_TYPES.LOAD]: {
+            ...state[REQUEST_TYPES.LOAD],
+            isFetching: false
+        },
+        CURRENT_SHIPMENT: action.payload
+    }
+)
+
 const updateSuccessRequest = ( state, action ) => {
     const { ITEMS } = state;
     const { payload: name } = action;
@@ -78,6 +81,11 @@ const updateSuccessRequest = ( state, action ) => {
 // EXPORTED => Reducer
 const initialState = {
     ITEMS: [],
+    CURRENT_SHIPMENT: {},
+    [REQUEST_TYPES.LOAD_SHIPMENT]: {
+        isFetching: false,
+        isError: false
+    },
     [REQUEST_TYPES.LOAD]: {
         isFetching: false,
         isError: false,
@@ -90,7 +98,7 @@ const initialState = {
     }
 }
 
-export default (state = initialState, action) => {
+export const shipmentsReducer = (state = initialState, action) => {
     switch (action.type) {
         // Load Shipments
         case LOAD_START:
@@ -99,6 +107,14 @@ export default (state = initialState, action) => {
             return failReguest(state, REQUEST_TYPES.LOAD);
         case LOAD_SUCCESS:
             return loadSuccessRequest(state, action);
+
+        // Load Shipments
+        case LOAD_SHIPMENT_START:
+            return startRequest(state, REQUEST_TYPES.LOAD_SHIPMENT);
+        case LOAD_SHIPMENT_FAIL:
+            return failReguest(state, REQUEST_TYPES.LOAD_SHIPMENT);
+        case LOAD_SHIPMENT_SUCCESS:
+            return loadShipmentSuccessRequest(state, action);
 
         // Update Shipments
         case UPDATE_START:
@@ -110,40 +126,4 @@ export default (state = initialState, action) => {
         default:
             return state;
     }
-}
-
-// Action Creators
-const loadStart = () => ({ type: LOAD_START });
-const loadFail = () => ({ type: LOAD_FAIL });
-const loadSuccess = payload => ({
-    type: LOAD_SUCCESS,
-    payload
-})
-
-const updateStart = () => ({ type: UPDATE_START });
-const updateFail = () => ({ type: UPDATE_FAIL });
-const updateSuccess = (payload, id) => ({
-    type: UPDATE_SUCCESS,
-    payload,
-    meta: { id }
-})
-
-export const fetchShipments = params => dispatch => {
-    const stringifiedParams = qs.stringify(params);
-
-    dispatch(loadStart());
-    dispatch(push({
-        search: stringifiedParams
-    }))
-    axios.get(APIConstants.shipments(stringifiedParams))
-        .then(({data}) => dispatch(loadSuccess(data)))
-        .catch(error => dispatch(loadFail()))
-}
-
-export const updateShipments = ( name, id ) => dispatch => {
-    dispatch(updateStart());
-    axios.patch(APIConstants.updateShipments(id), { name })
-        .then(({data: {name}}) => dispatch(updateSuccess(name, id))
-        )
-        .catch(error => dispatch(updateFail()))
 }

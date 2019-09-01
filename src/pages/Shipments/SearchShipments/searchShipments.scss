@@ -1,0 +1,17 @@
+.search-shipments-form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    grid-column-gap: 12px;
+    margin-bottom: 60px;
+   &__field {
+     width: 100%;
+     margin-bottom: 8px;
+     margin-bottom: 16px;
+   }
+
+   &__submit-button {
+       grid-column: 1 / span 2;
+   }
+}
