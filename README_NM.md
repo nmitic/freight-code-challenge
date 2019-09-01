@@ -11,6 +11,8 @@ I were to have more time.
     - For moving fast I descided to go for Material UI, but still wanted to srite scss as while I was setting up the project I added code spliting for scss or raw css files. Material ui does not play well with scss unless you make him do, which I did not...
 4. Actions 
     - They are not so DRY... There is a lot of duplication and with use of help/util func it could not just look better but also easier to write more code in the future.
+5. Error and Loading states
+    - Even tho I have set up for isLoading and Error state, nothing is really being reflected on the UI...
 
 Regarless on above still I still had fun. Thanks.
 
@@ -18,10 +20,14 @@ Available scripts:
 
 1. start - dev mode with dev server
 2. build - production ready build 
-3. start:mocks = run dev server and mock server
+3. start:mock = run dev server and mock server
 3. mocks = run mock server
 
 Project setup - run
+Please make sure that nothing is running on the port :3000 and :3030 before starting mock server, you can change the port in .env.development in __API__ and __PORT__ variables
+
 1. Not mandatory: Set up .env.develompent use .example as a guide, if not set .example will be used for dev mode
 2. Yarn or npm install
 3. Yarn start:mocks
+
+Please check assigned port for dev server in the logs.
